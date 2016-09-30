@@ -1,6 +1,8 @@
 package com.worldline.ego.itinerarylist.adapters;
 
 import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +20,15 @@ import java.util.List;
  */
 
 public class ItineraryListAdapter extends BaseAdapter {
-    private Activity activity;
+    private Activity mActivity;
     private List<ItineraryStop> mStopList;
     private TextView stopPict;
     private TextView stopName;
 
-    public ItineraryListAdapter (Activity activity, List<ItineraryStop> stopsList) {
+    public ItineraryListAdapter (final Activity activity, List<ItineraryStop> stopsList) {
         super();
         this.mStopList=stopsList;
-        this.activity=activity;
+        this.mActivity = activity;
     }
 
     @Override
@@ -53,7 +55,8 @@ public class ItineraryListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = activity.getLayoutInflater();
+//        Log.d("ItineraryAdapter", "Updating view");
+        LayoutInflater inflater = mActivity.getLayoutInflater();
 
         if (convertView==null) {
             convertView=inflater.inflate(R.layout.column_row, null);
@@ -71,5 +74,13 @@ public class ItineraryListAdapter extends BaseAdapter {
         stopName.setText(stop.getName());
 
         return convertView;
+    }
+
+    public List<ItineraryStop> getData() {
+        return this.mStopList;
+    }
+
+    public Activity getActivity() {
+        return this.mActivity;
     }
 }

@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.worldline.ego.itinerarylist.adapters.ItineraryListAdapter;
@@ -17,6 +19,7 @@ import com.worldline.ego.itinerarylist.helpers.ItineraryStop;
 import com.worldline.ego.itinerarylist.interfaces.ItineraryUpdateListener;
 import com.worldline.ego.itinerarylist.services.ItineraryService;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -34,6 +37,17 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        List<ItineraryStop> stopslist = new ArrayList();
+        mainListView = (ListView) findViewById(R.id.list);
+        listAdapter = new ItineraryListAdapter(this, stopslist);
+        mainListView.setAdapter(listAdapter);
+        ImageButton refreshButton = (ImageButton)findViewById(R.id.imageButton);
+        refreshButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                onRefreshClick(view);
+            }
+        });
     }
 
     @Override
@@ -45,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
     @Override
     protected void onResume() {
         super.onResume();
-
+        listAdapter.notifyDataSetChanged();
+/*
         // Set Repeating interval to refresh the itinerary
 
         // 1. register receiver
@@ -61,10 +76,13 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
         mServicePendingintent = PendingIntent.getService(this, 0, serviceIntent, 0); // Pending intent to give alarmService permission to send this intent (this)
         final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), REFRESH_TIME, mServicePendingintent);
+*/
     }
 
     @Override
     protected void onPause() {
+        super.onPause();
+/*
         // unregister receiver
         unregisterReceiver(itiUpdateReceiver);
         itiUpdateReceiver = null;
@@ -72,13 +90,27 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
         // Cancel alarmService repeat
         final AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(mServicePendingintent);
+*/
+    }
+
+    public void onRefreshClick(View view) {
+        Log.d("MainActivity", "Refreshing list");
+        new GetItineraryAsyncTask(this).execute(lineNumber, direction);
+        mainListView.refreshDrawableState();
     }
 
     public void onItineraryUpdate(List<ItineraryStop> stopslist) {
         Log.d("MainActivity", "List contains " + stopslist.size() + " entries");
-        mainListView = (ListView) findViewById(R.id.list);
-        listAdapter = new ItineraryListAdapter(this, stopslist);
-        mainListView.setAdapter(listAdapter);
+        dumpList(stopslist);
+        listAdapter.getData().clear();
+        listAdapter.getData().addAll(stopslist);
+        listAdapter.notifyDataSetChanged();
+    }
+
+    private void dumpList(List<ItineraryStop> stops) {
+        for (ItineraryStop stop : stops) {
+            Log.d(stop.getName(), "is "+stop.isPresent());
+        }
     }
 
     @Override

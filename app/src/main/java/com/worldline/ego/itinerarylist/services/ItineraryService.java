@@ -32,6 +32,6 @@ public class ItineraryService extends Service implements ItineraryUpdateListener
 
     @Override
     public void onItineraryUpdate(List<ItineraryStop> stopslist) {
-
+        final Intent = new Intent()
     }
 }

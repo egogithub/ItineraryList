@@ -22,11 +22,12 @@ import java.util.List;
 public class ItineraryListAdapter extends BaseAdapter {
     private Activity mActivity;
     private List<ItineraryStop> mStopList;
+    //private final LayoutInflater mInflater;
     private TextView stopPict;
     private TextView stopName;
 
     public ItineraryListAdapter (final Activity activity, List<ItineraryStop> stopsList) {
-        super();
+        //super();
         this.mStopList=stopsList;
         this.mActivity = activity;
     }
@@ -55,7 +56,7 @@ public class ItineraryListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-//        Log.d("ItineraryAdapter", "Updating view");
+        //Log.d("ItineraryAdapter", "Updating view");
         LayoutInflater inflater = mActivity.getLayoutInflater();
 
         if (convertView==null) {

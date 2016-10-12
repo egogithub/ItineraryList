@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
     private NewItiReceiver itiUpdateReceiver;
     private PendingIntent mServicePendingintent;
     public static final long REFRESH_TIME = 10 * 1000; // 10 seconds
+    Context context = MainActivity.this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
         setContentView(R.layout.activity_main);
         List<ItineraryStop> stopslist = new ArrayList();
         mainListView = (ListView) findViewById(R.id.list);
-        listAdapter = new ItineraryListAdapter(this, stopslist);
+        listAdapter = new ItineraryListAdapter(context, stopslist);
         mainListView.setAdapter(listAdapter);
         ImageButton refreshButton = (ImageButton)findViewById(R.id.imageButton);
         refreshButton.setOnClickListener(new View.OnClickListener(){
@@ -96,16 +97,12 @@ public class MainActivity extends AppCompatActivity implements ItineraryUpdateLi
     public void onRefreshClick(View view) {
         Log.d("MainActivity", "Refreshing list");
         new GetItineraryAsyncTask(this).execute(lineNumber, direction);
-//        mainListView.refreshDrawableState();
     }
 
     public void onItineraryUpdate(List<ItineraryStop> stopslist) {
         Log.d("MainActivity", "List contains " + stopslist.size() + " entries");
         dumpList(stopslist);
-        listAdapter.getData().clear();
-        listAdapter.getData().addAll(stopslist);
-        listAdapter.notifyDataSetChanged();
-        mainListView.refreshDrawableState();
+        listAdapter.updateResults(stopslist);
     }
 
     private void dumpList(List<ItineraryStop> stops) {

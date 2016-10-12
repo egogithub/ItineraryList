@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.worldline.ego.itinerarylist.ItineraryApplication;
 import com.worldline.ego.itinerarylist.R;
 import com.worldline.ego.itinerarylist.helpers.ItineraryStop;
 import com.worldline.ego.itinerarylist.pojo.Itinerary;
@@ -20,16 +21,14 @@ import java.util.List;
  */
 
 public class ItineraryListAdapter extends BaseAdapter {
-    private Activity mActivity;
     private List<ItineraryStop> mStopList;
-    //private final LayoutInflater mInflater;
-    private TextView stopPict;
-    private TextView stopName;
+    private LayoutInflater mInflater;
+    private Context context;
 
-    public ItineraryListAdapter (final Activity activity, List<ItineraryStop> stopsList) {
-        //super();
-        this.mStopList=stopsList;
-        this.mActivity = activity;
+    public ItineraryListAdapter (Context context, List<ItineraryStop> stopsList) {
+        mStopList=stopsList;
+        this.context=context;
+        mInflater = LayoutInflater.from(this.context);
     }
 
     @Override
@@ -45,26 +44,25 @@ public class ItineraryListAdapter extends BaseAdapter {
         if (null != this.mStopList) {
             return this.mStopList.get(position);
         }
-        return 0;
+        return null;
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        //Log.d("ItineraryAdapter", "Updating view");
-        LayoutInflater inflater = mActivity.getLayoutInflater();
+        TextView stopPict;
+        TextView stopName;
 
         if (convertView==null) {
-            convertView=inflater.inflate(R.layout.column_row, null);
-
-            stopPict = (TextView)convertView.findViewById(R.id.stopPict);
-            stopName = (TextView)convertView.findViewById(R.id.stopName);
+            convertView=mInflater.inflate(R.layout.column_row, null);
         }
+
+        stopPict = (TextView)convertView.findViewById(R.id.stopPict);
+        stopName = (TextView)convertView.findViewById(R.id.stopName);
 
         ItineraryStop stop = mStopList.get(position);
         if (stop.isPresent()) {
@@ -77,11 +75,11 @@ public class ItineraryListAdapter extends BaseAdapter {
         return convertView;
     }
 
+    public void updateResults(List<ItineraryStop> stopsList) {
+        this.mStopList = stopsList;
+        notifyDataSetChanged();
+    }
     public List<ItineraryStop> getData() {
         return this.mStopList;
-    }
-
-    public Activity getActivity() {
-        return this.mActivity;
     }
 }
